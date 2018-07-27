@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name" translatable="false">TimerTest</string>
+    <string name="timer_left_prefix">Left:</string>
+    <string name="timer_ended">Timer end</string>
+</resources>

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ActivityStart">
+
+    <TextView
+        android:id="@+id/timerValue"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
+    <ImageButton
+        android:id="@+id/timerMinus"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintDimensionRatio="1:1"
+        android:src="@drawable/ic_minus"
+
+        app:layout_constraintRight_toLeftOf="@+id/timerValue"
+        app:layout_constraintTop_toTopOf="@+id/timerValue"
+        app:layout_constraintBottom_toBottomOf="@+id/timerValue"
+        tools:ignore="ContentDescription"/>
+    <ImageButton
+        android:id="@+id/timerPlus"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_plus"
+        app:layout_constraintDimensionRatio="1:1"
+        app:layout_constraintLeft_toRightOf="@+id/timerValue"
+        app:layout_constraintTop_toTopOf="@+id/timerValue"
+        app:layout_constraintBottom_toBottomOf="@+id/timerValue"
+        tools:ignore="ContentDescription"/>
+    <ImageButton
+        android:id="@+id/timerReset"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:src="@drawable/ic_reset"
+        app:layout_constraintTop_toBottomOf="@+id/timerValue"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        tools:ignore="ContentDescription"/>
+
+</android.support.constraint.ConstraintLayout>
