@@ -19,7 +19,7 @@ public class ApiTimer  {
     private static ApiTimer INSTANCE;
 
 
-    private static final int MINUTE = 60;
+    static final int MINUTE = 60;
     private static final int INIT_TIMER_START = 5*MINUTE;
     private static final int MIN_TIMER_START = MINUTE;
     private static final int MAX_TIMER_START = 10*MINUTE;
@@ -48,9 +48,16 @@ public class ApiTimer  {
 
 
     public static void init(Context context,IApiTimerSettings settings){
+        TimerSaver ts = new TimerSaver(context);
         INSTANCE = new ApiTimer(settings);
         INSTANCE.addCallback(new TimerNotification(context));
         INSTANCE.addCallback(new TimerSounds());
+        INSTANCE.addCallback(ts);
+        INSTANCE.mCounter.set(ts.getPrefCounter(INIT_TIMER_START));
+        boolean start = ts.getPrefStarted(false);
+        if(start) {
+            INSTANCE.startTimer();
+        }
     }
     private ApiTimer(IApiTimerSettings settings){
         mSettings  = settings;

@@ -18,7 +18,10 @@ class TimerSounds implements ITimerCallback {
 
     @Override
     public void onTimerChanged(int timerValue, CharSequence textOut) {
-        if(timerValue > 0 && timerValue < 11){
+        if(timerValue == 0 || !ApiTimer.get().isStarted()) {
+            return;
+        }
+        if(timerValue < 11 || (timerValue%ApiTimer.MINUTE) == 0) {
             playShortSound();
         }
     }
