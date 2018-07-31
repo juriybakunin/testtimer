@@ -28,11 +28,15 @@ public class ApiTimer extends Handler {
     private volatile boolean mStarted = false;
     private IApiTimerSettings mSettings;
     private TimerTask mTimerTask;
+    private TimerNotification mTimerNotification;
 
     public static void init(Context context,IApiTimerSettings settings){
         TimerSaver ts = new TimerSaver(context);
+
         INSTANCE = new ApiTimer(settings);
-        INSTANCE.addCallback(new TimerNotification(context));
+        INSTANCE.mTimerNotification = new TimerNotification(context);
+
+        INSTANCE.addCallback(INSTANCE.mTimerNotification);
         INSTANCE.addCallback(new TimerSounds(context));
         INSTANCE.addCallback(ts);
         INSTANCE.mCounter.set(ts.getPrefCounter(INIT_TIMER_START));
@@ -53,6 +57,9 @@ public class ApiTimer extends Handler {
     private void notifyChangeWorkerThread(){
         sendEmptyMessage(MSG_CHANGED);
     }
+    TimerNotification getNotification(){
+        return mTimerNotification;
+    }
     public void resetTimer(){
         stopThreadTimer();
         mStarted = false;
@@ -61,7 +68,7 @@ public class ApiTimer extends Handler {
         notifyTimerStop(true);
     }
     public void startTimer(){
-        if(isStarted()) {
+        if(isStarted() || getCounter() == 0) {
             return;
         }
         mStarted = true;
@@ -149,13 +156,13 @@ public class ApiTimer extends Handler {
         }
     }
     public void increaseCounterByMinute(){
-        if(!isStarted() && getCounter()<MAX_TIMER_START){
+        if(!isStarted() && getCounter() > 0 && getCounter()<MAX_TIMER_START){
             mCounter.addAndGet(MINUTE);
             notifyChangeWorkerThread();
         }
     }
     public void decreaseCounterByMinute(){
-        if(!isStarted() && getCounter()>MIN_TIMER_START){
+        if(!isStarted() && getCounter() > 0 && getCounter()>MIN_TIMER_START){
             mCounter.addAndGet(0-MINUTE);
             notifyChangeWorkerThread();
         }

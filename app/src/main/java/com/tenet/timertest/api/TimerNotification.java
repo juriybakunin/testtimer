@@ -1,5 +1,6 @@
 package com.tenet.timertest.api;
 
+import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -16,8 +17,8 @@ public class TimerNotification implements ITimerCallback {
 
     private NotificationCompat.Builder mNotification;
     private NotificationManager mNotificationManager;
-    PendingIntent mNotificationStartedIntent;
-    PendingIntent mNotificationStoppedIntent;
+    private PendingIntent mNotificationStartedIntent;
+    private PendingIntent mNotificationStoppedIntent;
     TimerNotification(Context context){
         mNotificationManager =  (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
         initNotificationChannelIfNeed();
@@ -27,14 +28,18 @@ public class TimerNotification implements ITimerCallback {
         );
         mNotificationStoppedIntent = PendingIntent.getActivity(
                 context, 0, settings.getNotificationTimerStopedIntent(), PendingIntent.FLAG_UPDATE_CURRENT
-        );;
+        );
         mNotification = createNotification(context);
 
+    }
+    public Notification getNotification(){
+        return mNotification.build();
     }
     private NotificationCompat.Builder createNotification(Context context){
         return new NotificationCompat.Builder(context,NOTIFICATION_CHANNEL_NAME)
                 .setSound(null)
-                .setSmallIcon(android.R.drawable.ic_dialog_info);
+                .setSmallIcon(android.R.drawable.ic_dialog_info)
+                .setContentTitle("");
     }
     private void initNotificationChannelIfNeed() {
         if (Build.VERSION.SDK_INT < 26) {
@@ -73,6 +78,9 @@ public class TimerNotification implements ITimerCallback {
     @Override
     public void onTimerReset() {
         mNotificationManager.cancel(NOTIFICATION_ID);
+    }
+    public int getNotificationId() {
+        return NOTIFICATION_ID;
     }
 
 }
