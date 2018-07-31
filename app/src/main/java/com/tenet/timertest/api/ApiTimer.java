@@ -27,7 +27,7 @@ public class ApiTimer extends Handler {
     private final StringBuilder mStringBuilder = new StringBuilder();
     private volatile boolean mStarted = false;
     private IApiTimerSettings mSettings;
-    TimerTask mTimerTask;
+    private TimerTask mTimerTask;
 
     public static void init(Context context,IApiTimerSettings settings){
         TimerSaver ts = new TimerSaver(context);
@@ -70,12 +70,11 @@ public class ApiTimer extends Handler {
     public boolean isStarted() {
         return mStarted;
     }
-    private boolean decrementCounterIfCan() {
+    private void decrementCounterIfCan() {
         if(getCounter() == 0) {
-            return false;
+            return;
         }
         mCounter.decrementAndGet();
-        return true;
     }
     void executeThreadTimer(){
         mTimerTask = new TimerTask() {
@@ -93,6 +92,7 @@ public class ApiTimer extends Handler {
             mTimerTask = null;
         }
         TimerService.stop(getSettings().getAppContext());
+        mStarted = false;
     }
     public int getCounter() {
         return mCounter.get();
