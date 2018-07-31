@@ -15,4 +15,10 @@ public class ActivitySecond extends AppCompatActivity{
     public static void run(Context c){
         c.startActivity(new Intent(c,ActivitySecond.class));
     }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        startActivity(new Intent(this,ActivityStart.class));
+    }
 }

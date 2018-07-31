@@ -1,19 +1,23 @@
 package com.tenet.timertest.api;
 
-import android.media.AudioManager;
-import android.media.ToneGenerator;
+import android.content.Context;
+import android.media.MediaPlayer;
 
-class TimerSounds implements ITimerCallback {
+import com.tenet.timertest.R;
 
-    private ToneGenerator mToneGenerator;
-    TimerSounds(){
-        mToneGenerator = new ToneGenerator(AudioManager.STREAM_NOTIFICATION,100);
+public class TimerSounds implements ITimerCallback {
+
+    private MediaPlayer mShortSound;
+    private MediaPlayer  mLongSound;
+    TimerSounds(Context context){
+        mShortSound = MediaPlayer.create(context, R.raw.short_sound);
+        mLongSound = MediaPlayer.create(context, R.raw.long_sound);
     }
     private void playShortSound(){
-        mToneGenerator.startTone(ToneGenerator.TONE_CDMA_PIP,50);
+        mShortSound.start();
     }
     private void playLongSound(){
-        mToneGenerator.startTone(ToneGenerator.TONE_CDMA_ANSWER,250);
+        mLongSound.start();
     }
 
     @Override

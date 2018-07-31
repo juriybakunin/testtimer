@@ -7,5 +7,6 @@ public interface IApiTimerSettings {
     Context getAppContext();
     String getTimerLeftPrefix();
     String getTimerEndMessage();
-    Intent getNotificationRunIntent();
+    Intent getNotificationTimerStartedIntent();
+    Intent getNotificationTimerStopedIntent();
 }

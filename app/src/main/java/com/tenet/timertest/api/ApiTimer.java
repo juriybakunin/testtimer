@@ -1,23 +1,21 @@
 package com.tenet.timertest.api;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
+import android.os.Handler;
+import android.os.Message;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import io.reactivex.Observable;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Consumer;
-import io.reactivex.functions.Predicate;
-
-public class ApiTimer  {
+public class ApiTimer extends Handler {
 
     private static ApiTimer INSTANCE;
-
+    private static final int MSG_CHANGED = 1;
+    private static final int MSG_RESET = 2;
 
     static final int MINUTE = 60;
     private static final int INIT_TIMER_START = 5*MINUTE;
@@ -29,29 +27,13 @@ public class ApiTimer  {
     private final StringBuilder mStringBuilder = new StringBuilder();
     private volatile boolean mStarted = false;
     private IApiTimerSettings mSettings;
-    private Disposable mDispose;
-    private Observable<Long> mObservableTimer = Observable.interval(1,1, TimeUnit.SECONDS)
-            .takeWhile(new Predicate<Long>() {
-                @Override
-                public boolean test(Long aLong) throws Exception {
-                    return decrementCounterIfCan();
-                }
-            }).observeOn(AndroidSchedulers.mainThread());
-    private Observable<Long> mObservableUpdateUi = Observable.just((long)1)
-            .observeOn(AndroidSchedulers.mainThread());
-    private Consumer<Long> mConsumerUpdateUi = new Consumer<Long>() {
-        @Override
-        public void accept(Long integer) throws Exception {
-            notifyUIThreadChange();
-        }
-    };
-
+    TimerTask mTimerTask;
 
     public static void init(Context context,IApiTimerSettings settings){
         TimerSaver ts = new TimerSaver(context);
         INSTANCE = new ApiTimer(settings);
         INSTANCE.addCallback(new TimerNotification(context));
-        INSTANCE.addCallback(new TimerSounds());
+        INSTANCE.addCallback(new TimerSounds(context));
         INSTANCE.addCallback(ts);
         INSTANCE.mCounter.set(ts.getPrefCounter(INIT_TIMER_START));
         boolean start = ts.getPrefStarted(false);
@@ -68,9 +50,8 @@ public class ApiTimer  {
     public static ApiTimer get(){
         return INSTANCE;
     }
-    @SuppressLint("CheckResult")
     private void notifyChangeWorkerThread(){
-        mObservableUpdateUi.subscribe(mConsumerUpdateUi);
+        sendEmptyMessage(MSG_CHANGED);
     }
     public void resetTimer(){
         stopThreadTimer();
@@ -97,12 +78,19 @@ public class ApiTimer  {
         return true;
     }
     void executeThreadTimer(){
-        mDispose = mObservableTimer.subscribe(mConsumerUpdateUi);
+        mTimerTask = new TimerTask() {
+            @Override
+            public void run() {
+                decrementCounterIfCan();
+                notifyChangeWorkerThread();
+            }
+        };
+        new Timer().schedule(mTimerTask,1000,1000);
     }
     private void stopThreadTimer(){
-        if(mDispose != null){
-            mDispose.dispose();
-            mDispose = null;
+        if(mTimerTask != null){
+            mTimerTask.cancel();
+            mTimerTask = null;
         }
         TimerService.stop(getSettings().getAppContext());
     }
@@ -135,6 +123,7 @@ public class ApiTimer  {
 
     private void notifyUIThreadChange(){
         int counter = getCounter();
+        Log.d("TimerTest","Counter:"+counter);
         notifyTimerChange();
         if(counter == 0) {
             stopThreadTimer();
@@ -169,6 +158,15 @@ public class ApiTimer  {
         if(!isStarted() && getCounter()>MIN_TIMER_START){
             mCounter.addAndGet(0-MINUTE);
             notifyChangeWorkerThread();
+        }
+    }
+
+    @Override
+    public void handleMessage(Message msg) {
+        super.handleMessage(msg);
+        notifyUIThreadChange();
+        if(msg.what == MSG_RESET) {
+            notifyTimerStop(true);
         }
     }
 }

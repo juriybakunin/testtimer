@@ -18,9 +18,7 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <activity android:name=".ActivitySecond"
-                android:parentActivityName=".ActivityStart"
-                  tools:ignore="UnusedAttribute"/>
+        <activity android:name=".ActivitySecond"/>
 
         <service
             android:name=".api.TimerService"

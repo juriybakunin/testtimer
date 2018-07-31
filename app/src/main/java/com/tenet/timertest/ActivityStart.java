@@ -28,10 +28,12 @@ public class ActivityStart extends AppCompatActivity implements ITimerCallback {
         mPlus = findViewById(R.id.timerPlus);
         mMinus = findViewById(R.id.timerMinus);
         mReset = findViewById(R.id.timerReset);
+
         mPlus.setOnClickListener(listener);
         mMinus.setOnClickListener(listener);
         mReset.setOnClickListener(listener);
         mTimerValue.setOnClickListener(listener);
+
         ApiTimer api = ApiTimer.get();
         onTimerChanged(api.getCounter(),api.getTextOut());
         ApiTimer.get().addCallback(this);
@@ -43,6 +45,7 @@ public class ActivityStart extends AppCompatActivity implements ITimerCallback {
 
     @Override
     public void onTimerEnded() {
+        finish();
         ActivitySecond.run(this);
     }
 

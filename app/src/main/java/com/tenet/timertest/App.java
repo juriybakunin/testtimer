@@ -28,8 +28,14 @@ public class App extends Application {
             }
 
             @Override
-            public Intent getNotificationRunIntent() {
+            public Intent getNotificationTimerStartedIntent() {
                 return new Intent(App.this,ActivityStart.class)
+                        .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            }
+
+            @Override
+            public Intent getNotificationTimerStopedIntent() {
+                return new Intent(App.this,ActivitySecond.class)
                         .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK);
             }
         };
